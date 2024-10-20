@@ -72,8 +72,10 @@ impl Instance {
 impl Drop for Instance {
     fn drop(&mut self) {
         if let Some(dbg_loader) = &self.dbg_loader {
+            log::trace!("Destroying validation layer structs");
             unsafe { dbg_loader.destroy_debug_utils_messenger(self.messenger, None) };
         }
+        log::trace!("Destroying vulkan instance");
         unsafe { self.instance.destroy_instance(None) }
     }
 }

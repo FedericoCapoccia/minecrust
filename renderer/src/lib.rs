@@ -94,6 +94,7 @@ impl Renderer {
                 panic!("{}", err);
             }
         };
+        log::info!("Vulkan instance created successfully");
 
         Self { instance }
     }
