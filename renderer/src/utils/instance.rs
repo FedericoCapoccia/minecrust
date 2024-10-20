@@ -92,10 +92,18 @@ unsafe extern "system" fn debug_callback(
     };
 
     match message_severity {
-        vk::DebugUtilsMessageSeverityFlagsEXT::VERBOSE => log::trace!("{}", message),
-        vk::DebugUtilsMessageSeverityFlagsEXT::INFO => log::info!("{}", message),
-        vk::DebugUtilsMessageSeverityFlagsEXT::WARNING => log::warn!("{}", message),
-        vk::DebugUtilsMessageSeverityFlagsEXT::ERROR => log::error!("{}", message),
+        vk::DebugUtilsMessageSeverityFlagsEXT::VERBOSE => {
+            log::trace!(target: "renderer", "{}", message)
+        }
+        vk::DebugUtilsMessageSeverityFlagsEXT::INFO => {
+            log::info!(target: "renderer" ,"{}", message)
+        }
+        vk::DebugUtilsMessageSeverityFlagsEXT::WARNING => {
+            log::warn!(target: "renderer", "{}", message)
+        }
+        vk::DebugUtilsMessageSeverityFlagsEXT::ERROR => {
+            log::error!(target: "renderer", "{}", message)
+        }
         _ => unreachable!("Khronos added new Debug Messenger flags"),
     }
 
