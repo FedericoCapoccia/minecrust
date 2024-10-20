@@ -30,7 +30,7 @@ impl ApplicationHandler for App {
             log::info!("Winit window created successfully");
 
             let app_name = CString::new(self.window.title.clone()).unwrap();
-            let renderer = Renderer::new(app_name, true);
+            let renderer = Renderer::new(self.window.handle(), app_name, true);
             self.renderer = Some(renderer);
             log::info!("Renderer created succesfully");
         }

@@ -43,4 +43,11 @@ impl Window {
     pub fn has_handle(&self) -> bool {
         self.handle.is_some()
     }
+
+    pub fn handle(&self) -> &winit::window::Window {
+        if let Some(handle) = &self.handle {
+            return handle;
+        }
+        panic!("Tried to retrieve an handle reference without first initialize it");
+    }
 }

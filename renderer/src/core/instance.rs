@@ -1,6 +1,12 @@
-use std::ffi::{c_char, CStr, CString};
+use std::{
+    error::Error,
+    ffi::{c_char, CStr, CString},
+};
 
-use ash::{self, ext, vk};
+use ash::{self, ext, khr, vk};
+use raw_window_handle::{HasDisplayHandle, HasWindowHandle};
+
+use super::surface::Surface;
 
 pub struct InstanceSpec {
     pub app_name: CString,
@@ -10,7 +16,7 @@ pub struct InstanceSpec {
 }
 
 pub struct Instance {
-    _entry: ash::Entry,
+    entry: ash::Entry,
     instance: ash::Instance,
     dbg_loader: Option<ext::debug_utils::Instance>,
     messenger: vk::DebugUtilsMessengerEXT,
@@ -61,11 +67,25 @@ impl Instance {
         };
 
         Ok(Self {
-            _entry: entry,
+            entry,
             instance,
             dbg_loader,
             messenger,
         })
+    }
+
+    pub fn create_surface<T>(&self, window: &T) -> Result<Surface, Box<dyn Error>>
+    where
+        T: HasDisplayHandle + HasWindowHandle,
+    {
+        let loader = khr::surface::Instance::new(&self.entry, &self.instance);
+        let rwh = window.window_handle()?.as_raw();
+        let rdh = window.display_handle()?.as_raw();
+
+        let surface =
+            unsafe { ash_window::create_surface(&self.entry, &self.instance, rdh, rwh, None)? };
+
+        Ok(Surface::new(loader, surface))
     }
 }
 

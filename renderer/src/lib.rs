@@ -1,5 +1,7 @@
 use std::ffi::CString;
 
+use raw_window_handle::{HasDisplayHandle, HasWindowHandle};
+
 mod core;
 
 /*
@@ -63,17 +65,26 @@ mod core;
 * ```
 */
 
-//use ash::vk;
+// TODO: remove panics and unwrapping and move them to be handled in client code
 
+// NOTE: rust calls Drop implementations in order of member declaration. This is stupid imho but it
+// is what it is
 #[allow(dead_code)]
 pub struct Renderer {
+    surface: core::Surface,
     instance: core::Instance,
 }
 
 impl Renderer {
-    pub fn new(app_name: CString, validation: bool) -> Self {
+    pub fn new<T>(window: &T, app_name: CString, validation: bool) -> Self
+    where
+        T: HasDisplayHandle + HasWindowHandle,
+    {
         let mut layers = vec![];
-        let mut extensions = vec![];
+        let rwh = window.display_handle().unwrap().as_raw();
+        let mut extensions = ash_window::enumerate_required_extensions(rwh)
+            .unwrap()
+            .to_vec();
 
         if validation {
             extensions.push(ash::ext::debug_utils::NAME.as_ptr());
@@ -96,7 +107,16 @@ impl Renderer {
         };
         log::info!("Vulkan instance created successfully");
 
-        Self { instance }
+        let surface = match instance.create_surface(window) {
+            Ok(val) => val,
+            Err(err) => {
+                log::error!("Surface creation error: {}", err);
+                panic!("{}", err);
+            }
+        };
+        log::info!("Vulkan surface created successfully");
+
+        Self { instance, surface }
     }
 }
 
