@@ -49,5 +49,6 @@ impl Window {
             return handle;
         }
         panic!("Tried to retrieve an handle reference without first initialize it");
+        // FIXME:
     }
 }

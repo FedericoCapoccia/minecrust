@@ -67,8 +67,8 @@ mod core;
 
 // TODO: remove panics and unwrapping and move them to be handled in client code
 
-// NOTE: rust calls Drop implementations in order of member declaration. This is stupid imho but it
-// is what it is
+// NOTE: rust calls Drop implementations in order of member declaration.
+// This is stupid imho but it is what it is
 #[allow(dead_code)]
 pub struct Renderer {
     surface: core::Surface,
@@ -115,6 +115,16 @@ impl Renderer {
             }
         };
         log::info!("Vulkan surface created successfully");
+
+        let extensions = vec![];
+        let (_gpu, _graphics_family_index) =
+            match core::select_gpu(instance.handle(), &surface, &extensions) {
+                Ok(val) => val,
+                Err(err) => {
+                    log::error!("GPU selection failed: {}", err);
+                    panic!();
+                }
+            };
 
         Self { instance, surface }
     }

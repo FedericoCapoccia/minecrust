@@ -87,6 +87,10 @@ impl Instance {
 
         Ok(Surface::new(loader, surface))
     }
+
+    pub fn handle(&self) -> &ash::Instance {
+        &self.instance
+    }
 }
 
 impl Drop for Instance {
