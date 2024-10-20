@@ -44,13 +44,61 @@ mod utils;
 * -- 5 submit to queue
 * -- 6. present to swapcain
 * -- 7 advance to next frame
+* ```
+* fn draw_frame(&mut self) {
+        self.renderer.begin_frame(); // Begin the frame rendering process
+
+        self.renderer.get_command_buffer();
+
+        // Pass the renderer and draw the chunks
+        for chunk in &self.chunks {
+            // draw code WIP
+            //self.renderer.draw_chunk(chunk);
+        }
+
+        self.renderer.end_frame();   // Submit command buffer and present the frame
+    }
+* ```
 */
 
-pub struct Renderer {}
+//use ash::vk;
+
+#[allow(dead_code)]
+pub struct Renderer {
+    instance: utils::Instance,
+}
 
 impl Renderer {
     pub fn new() -> Self {
-        utils::create_instance();
-        Self {}
+        let validation = true;
+
+        let mut layers = vec![];
+        let mut extensions = vec![];
+
+        if validation {
+            extensions.push(ash::ext::debug_utils::NAME.as_ptr());
+            layers.push(c"VK_LAYER_KHRONOS_validation".as_ptr());
+        }
+
+        let instance_spec = utils::InstanceSpec {
+            app_name: c"app".into(),
+            extensions,
+            layers,
+            validation,
+        };
+
+        let instance = match utils::Instance::new(instance_spec) {
+            Ok(val) => val,
+            Err(err) => {
+                log::error!("Instance creation error: {}", err);
+                panic!("{}", err);
+            }
+        };
+
+        Self { instance }
     }
+}
+
+impl Drop for Renderer {
+    fn drop(&mut self) {}
 }
