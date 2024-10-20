@@ -1,6 +1,7 @@
 fn main() {
     init_logger();
-    let _renderer = renderer::Renderer::new();
+    let app_name = c"Minecrust".into();
+    let _renderer = renderer::Renderer::new(app_name, true);
 }
 
 fn init_logger() {

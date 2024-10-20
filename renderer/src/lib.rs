@@ -1,3 +1,5 @@
+use std::ffi::CString;
+
 mod utils;
 
 /*
@@ -69,9 +71,7 @@ pub struct Renderer {
 }
 
 impl Renderer {
-    pub fn new() -> Self {
-        let validation = true;
-
+    pub fn new(app_name: CString, validation: bool) -> Self {
         let mut layers = vec![];
         let mut extensions = vec![];
 
@@ -81,7 +81,7 @@ impl Renderer {
         }
 
         let instance_spec = utils::InstanceSpec {
-            app_name: c"app".into(),
+            app_name,
             extensions,
             layers,
             validation,

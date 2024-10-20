@@ -96,7 +96,7 @@ unsafe extern "system" fn debug_callback(
             log::trace!(target: "renderer", "{}", message)
         }
         vk::DebugUtilsMessageSeverityFlagsEXT::INFO => {
-            log::info!(target: "renderer" ,"{}", message)
+            log::info!(target: "renderer" , "{}", message)
         }
         vk::DebugUtilsMessageSeverityFlagsEXT::WARNING => {
             log::warn!(target: "renderer", "{}", message)
