@@ -1,6 +1,6 @@
 use std::ffi::CString;
 
-mod utils;
+mod core;
 
 /*
 *NOTE:
@@ -67,7 +67,7 @@ mod utils;
 
 #[allow(dead_code)]
 pub struct Renderer {
-    instance: utils::Instance,
+    instance: core::Instance,
 }
 
 impl Renderer {
@@ -80,14 +80,14 @@ impl Renderer {
             layers.push(c"VK_LAYER_KHRONOS_validation".as_ptr());
         }
 
-        let instance_spec = utils::InstanceSpec {
+        let instance_spec = core::InstanceSpec {
             app_name,
             extensions,
             layers,
             validation,
         };
 
-        let instance = match utils::Instance::new(instance_spec) {
+        let instance = match core::Instance::new(instance_spec) {
             Ok(val) => val,
             Err(err) => {
                 log::error!("Instance creation error: {}", err);
