@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 ash = { version = "0.38.0", features = ["linked"] }
 log = "0.4.22"
+raw-window-handle = "0.6.2"

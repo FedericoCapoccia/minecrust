@@ -1,12 +1,23 @@
+mod app;
+mod window;
+
+use winit::event_loop::EventLoop;
+
+use crate::app::App;
+use crate::window::Window;
+
 fn main() {
     init_logger();
-    let app_name = c"Minecrust".into();
-    let _renderer = renderer::Renderer::new(app_name, true);
+
+    let window = Window::new("Minecrust".into(), 1280, 720);
+
+    let event_loop = EventLoop::new().unwrap();
+    let mut app = App::new(window);
+    let _ = event_loop.run_app(&mut app);
 }
 
 fn init_logger() {
     env_logger::Builder::new()
-        .filter(None, log::LevelFilter::Trace)
         .filter(Some("renderer"), log::LevelFilter::Trace)
         .filter(Some("sandbox"), log::LevelFilter::Trace)
         .format(|buf, record| {
