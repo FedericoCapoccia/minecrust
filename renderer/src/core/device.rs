@@ -48,6 +48,10 @@ impl Device {
         Ok(buffers[0])
     }
 
+    pub fn wait_idle(&self) {
+        let _ = unsafe { self.handle.device_wait_idle() };
+    }
+
     pub fn create_semaphore(
         &self,
         flags: vk::SemaphoreCreateFlags,

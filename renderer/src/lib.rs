@@ -7,11 +7,7 @@ mod core;
 
 /*
 *NOTE:
-* [] create device
 * [] Create Swapchain
-* [] setup a double frame in flight system
-* [] - [framedata, 2], each app loop end increment frame count
-* [] - app can access sync structures and command buffer of the current usuable frame with a function
 * [] expose allocated image to the app to be drawn on
 * [] expose queue/swapchain functions to the app
 * [] clear color
@@ -214,6 +210,7 @@ impl Renderer {
 impl Drop for Renderer {
     fn drop(&mut self) {
         log::trace!("Destroying Renderer");
+        self.device.wait_idle();
 
         for frame in &self.frames {
             self.device.destroy_command_pool(frame.pool);
