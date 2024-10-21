@@ -12,6 +12,17 @@ impl Surface {
     ) -> Self {
         Self { loader, handle }
     }
+
+    pub fn support_presenting(
+        &self,
+        gpu: vk::PhysicalDevice,
+        queue_index: u32,
+    ) -> Result<bool, vk::Result> {
+        unsafe {
+            self.loader
+                .get_physical_device_surface_support(gpu, queue_index, self.handle)
+        }
+    }
 }
 
 impl Drop for Surface {

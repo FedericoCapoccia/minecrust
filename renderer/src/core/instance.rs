@@ -6,7 +6,7 @@ use std::{
 use ash::{self, ext, khr, vk};
 use raw_window_handle::{HasDisplayHandle, HasWindowHandle};
 
-use super::surface::Surface;
+use super::{surface::Surface, Device};
 
 pub struct InstanceSpec {
     pub app_name: CString,
@@ -90,6 +90,29 @@ impl Instance {
 
     pub fn handle(&self) -> &ash::Instance {
         &self.instance
+    }
+
+    pub fn create_device(
+        &self,
+        gpu: vk::PhysicalDevice,
+        graphics_index: u32,
+        extensions: &[*const c_char],
+    ) -> Result<Device, vk::Result> {
+        let priority = &[1.0_f32];
+        let queue_info = vk::DeviceQueueCreateInfo::default()
+            .queue_family_index(graphics_index)
+            .queue_priorities(priority);
+
+        let binding = [queue_info];
+        let create_info = vk::DeviceCreateInfo::default()
+            .enabled_extension_names(extensions)
+            .queue_create_infos(&binding);
+
+        let handle = unsafe { self.instance.create_device(gpu, &create_info, None) }?;
+
+        let graphics = unsafe { handle.get_device_queue(graphics_index, 0) };
+
+        Ok(Device::new(gpu, handle, graphics, graphics_index))
     }
 }
 

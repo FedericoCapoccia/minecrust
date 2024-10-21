@@ -1,15 +1,13 @@
 use std::ffi::CString;
 
+use ash::{ext, khr};
 use raw_window_handle::{HasDisplayHandle, HasWindowHandle};
 
 mod core;
 
 /*
 *NOTE:
-* [] Create Instance
-* [] Create Debug messenger
-* [] Create Surface
-* [] Select and create device
+* [] create device
 * [] Create Swapchain
 * [] setup a double frame in flight system
 * [] - [framedata, 2], each app loop end increment frame count
@@ -71,6 +69,7 @@ mod core;
 // This is stupid imho but it is what it is
 #[allow(dead_code)]
 pub struct Renderer {
+    device: core::Device,
     surface: core::Surface,
     instance: core::Instance,
 }
@@ -116,8 +115,15 @@ impl Renderer {
         };
         log::info!("Vulkan surface created successfully");
 
-        let extensions = vec![];
-        let (_gpu, _graphics_family_index) =
+        let extensions = vec![
+            khr::swapchain::NAME.as_ptr(),
+            khr::dynamic_rendering::NAME.as_ptr(),
+            khr::synchronization2::NAME.as_ptr(),
+            khr::buffer_device_address::NAME.as_ptr(),
+            ext::descriptor_indexing::NAME.as_ptr(),
+        ];
+
+        let (gpu, graphics_family_index) =
             match core::select_gpu(instance.handle(), &surface, &extensions) {
                 Ok(val) => val,
                 Err(err) => {
@@ -126,7 +132,20 @@ impl Renderer {
                 }
             };
 
-        Self { instance, surface }
+        let device = match instance.create_device(gpu, graphics_family_index, &extensions) {
+            Ok(val) => val,
+            Err(err) => {
+                log::error!("Device creation failed: {}", err);
+                panic!();
+            }
+        };
+        log::info!("Device created succesfully");
+
+        Self {
+            instance,
+            surface,
+            device,
+        }
     }
 }
 
